@@ -1,5 +1,5 @@
 import random
-# PyCross!
+# Picross!
 DIMENSIONS = [10, 10]
 RESOLUTION = [600, 600]
 
@@ -13,10 +13,14 @@ def generate_board():
     return board
 
 
-def check_board(entries):
-    for row_idx, row in enumerate(entries):
+def check_board(entries, canvas):
+    for row_idx, row in enumerate(board):
         for val_idx, val in enumerate(row):
-            if (val and not board[row_idx][val_idx]) or (not val and board[row_idx][val_idx]):
+            if entries[row_idx][val_idx]:
+                color = canvas.itemcget(entries[row_idx][val_idx], 'fill')
+            else:
+                color = ''
+            if (val and not color == 'blue') or (not val and color == 'blue'):
                 return False
     return True
 
@@ -62,7 +66,7 @@ def callback(event):
     # Calculate column and row number
     col = int((event.x-padding)//col_width)
     row = int((event.y-padding)//row_height)
-    if event.x < padding + outline or event.y < padding + outline:
+    if event.x < padding + outline or event.y < padding + outline or col > 9 or row > 9:
         pass
     else:
         if event.num == 3:
@@ -76,7 +80,7 @@ def callback(event):
         else:
             c.delete(tiles[row][col])
             tiles[row][col] = None
-        if check_board(tiles):
+        if check_board(tiles, c):
             c.quit()
 
 # Create the window, a canvas and the mouse click event binding
