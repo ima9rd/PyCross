@@ -1,5 +1,5 @@
 import random
-# Picross!
+# PyCross!
 DIMENSIONS = [10, 10]
 RESOLUTION = [600, 600]
 
