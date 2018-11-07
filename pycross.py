@@ -3,7 +3,7 @@ import tkinter as tk
 
 
 # PyCross!
-DIMENSIONS = [10, 10]
+DIMENSIONS = [2, 2]
 RESOLUTION = [600, 600]
 PADDING = 100
 OUTLINE = 5
@@ -19,14 +19,10 @@ def generate_board():
 
 def check_board(entries, canvas):
     global board
-    for row_idx, row in enumerate(board):
-        for val_idx, val in enumerate(row):
-            if entries[row_idx][val_idx]:
-                color = canvas.itemcget(entries[row_idx][val_idx], 'fill')
-            else:
-                color = ''
-            if (val and not color == 'blue') or (not val and color == 'blue'):
-                return False
+    entry_row, entry_col = describe_board(entries, canvas)
+    board_row, board_col = describe_board(board)
+    if entry_row != board_row or entry_col != board_col:
+        return False
     return True
 
 def generate_desc(value_list):
@@ -43,15 +39,37 @@ def generate_desc(value_list):
         vals.append(i)
     return vals
 
-def describe_board(board):
+def describe_board(board, canvas=None):
     row_desc = []
     for row in board:
-        row_desc.append(generate_desc(row))
+        row_temp = []
+        if canvas:
+            for cell in row:
+                if cell:
+                    if canvas.itemcget(cell, 'fill') == 'blue':
+                        row_temp.append(1)
+                    else:
+                        row_temp.append(0)
+        else:
+            row_temp = row
+        row_desc.append(generate_desc(row_temp))
     column_desc = []
     for i in range(DIMENSIONS[0]):
         tmp = []
         for n in range(DIMENSIONS[1]):
-            tmp.append(board[n][i])
+            if canvas:
+                contents = board[n][i]
+                if contents:
+                    cell = canvas.itemcget(contents, 'fill')
+                    if cell == 'blue':
+                        val = 1
+                    else:
+                        val = 0
+                else:
+                    val = 0
+            else:
+                val = board[n][i]
+            tmp.append(val)
         column_desc.append(generate_desc(tmp))
         tmp = []
     return row_desc, column_desc
@@ -61,7 +79,13 @@ def init_game(canvas):
     canvas.bind("<Button-3>", callback)
     canvas.delete('all')
     global board, tiles
-    generate_board()
+
+    valid = False
+    while not valid:
+        generate_board()
+        for row in board:
+            if 1 in row:
+                valid = True
     row_desc, column_desc = describe_board(board)
     tiles = [[None for _ in range(DIMENSIONS[1])] for _ in range(DIMENSIONS[0])]
     row_height = (RESOLUTION[1]-PADDING)/DIMENSIONS[1]
