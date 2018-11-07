@@ -1,7 +1,12 @@
 import random
+import tkinter as tk
+
+
 # PyCross!
-DIMENSIONS = [10, 10]
+DIMENSIONS = [4, 4]
 RESOLUTION = [600, 600]
+PADDING = 100
+OUTLINE = 5
 
 def generate_board():
     board = []
@@ -13,7 +18,7 @@ def generate_board():
     return board
 
 
-def check_board(entries, canvas):
+def check_board(entries, canvas, board):
     for row_idx, row in enumerate(board):
         for val_idx, val in enumerate(row):
             if entries[row_idx][val_idx]:
@@ -38,35 +43,60 @@ def generate_desc(value_list):
         vals.append(i)
     return vals
 
+def describe_board(board):
+    row_desc = []
+    for row in board:
+        row_desc.append(generate_desc(row))
+    column_desc = []
+    for i in range(DIMENSIONS[0]):
+        tmp = []
+        for n in range(DIMENSIONS[1]):
+            tmp.append(board[n][i])
+        column_desc.append(generate_desc(tmp))
+        tmp = []
+    return row_desc, column_desc
 
-board = generate_board()
+def init_game(canvas):
+    canvas.bind("<Button-1>", callback)
+    canvas.bind("<Button-3>", callback)
+    canvas.delete('all')
+    board = generate_board()
+    row_desc, column_desc = describe_board(board)
+    tiles = [[None for _ in range(DIMENSIONS[1])] for _ in range(DIMENSIONS[0])]
+    row_height = (RESOLUTION[1]-PADDING)/DIMENSIONS[1]
+    for i, val in enumerate(row_desc):
+        string = '    '.join([str(i) for i in val])
+        canvas.create_text(PADDING/2, (PADDING + row_height*i + int(row_height/2)), text=string)
+    row_width = (RESOLUTION[0]-PADDING)/DIMENSIONS[0]
+    for i, val in enumerate(column_desc):
+        string = '\n'.join([str(i) for i in val])
+        canvas.create_text((PADDING + (row_width*i) + row_width/2), PADDING/2, text=string)
+    canvas.create_rectangle(PADDING, PADDING, RESOLUTION[0], RESOLUTION[1])
+    for i in range(DIMENSIONS[0]):
+        for n in range(DIMENSIONS[1]):
+            canvas.create_rectangle((i*row_width)+PADDING, (n*row_height)+PADDING, ((i+1)*row_width)+PADDING, ((n+1)*row_height)+PADDING)
+    return board, tiles
 
-row_desc = []
-for row in board:
-    row_desc.append(generate_desc(row))
-column_desc = []
-for i in range(DIMENSIONS[0]):
-    tmp = []
-    for n in range(DIMENSIONS[1]):
-        tmp.append(board[n][i])
-    column_desc.append(generate_desc(tmp))
-    tmp = []
-
-
-import tkinter as tk
+def game_over(canvas):
+    canvas.delete('all')
+    canvas.create_text(RESOLUTION[0]/2, RESOLUTION[1]/2, text='You won! Click anywhere to begin a new game.')
+    canvas.bind("<Button-1>", game_over_screen)
+    canvas.bind("<Button-3>", game_over_screen)
 
 # Create a grid of None to store the references to the tiles
-tiles = [[None for _ in range(DIMENSIONS[1])] for _ in range(DIMENSIONS[0])]
-padding = 100
-outline = 5
+
+def game_over_screen(event):
+    board, tiles = init_game(c)
+
+
 def callback(event):
     # Get rectangle diameters
-    col_width = (c.winfo_width() - 14 - padding)/DIMENSIONS[0]
-    row_height = (c.winfo_height() - 14 - padding)/DIMENSIONS[1]
+    col_width = (c.winfo_width() - 14 - PADDING)/DIMENSIONS[0]
+    row_height = (c.winfo_height() - 14 - PADDING)/DIMENSIONS[1]
     # Calculate column and row number
-    col = int((event.x-padding)//col_width)
-    row = int((event.y-padding)//row_height)
-    if event.x < padding + outline or event.y < padding + outline or col > 9 or row > 9:
+    col = int((event.x-PADDING)//col_width)
+    row = int((event.y-PADDING)//row_height)
+    if event.x < PADDING + OUTLINE or event.y < PADDING + OUTLINE or col > 9 or row > 9:
         pass
     else:
         if event.num == 3:
@@ -75,34 +105,19 @@ def callback(event):
             color = 'blue' 
         # If the tile is not filled, create a rectangle
         if not tiles[row][col]:
-            tiles[row][col] = c.create_rectangle((col*col_width)+padding+outline, (row*row_height)+padding+outline, ((col+1)*col_width)+padding-outline, ((row+1)*row_height)+padding-outline, fill=color)
+            tiles[row][col] = c.create_rectangle((col*col_width)+PADDING+OUTLINE, (row*row_height)+PADDING+OUTLINE, ((col+1)*col_width)+PADDING-OUTLINE, ((row+1)*row_height)+PADDING-OUTLINE, fill=color)
         # If the tile is filled, delete the rectangle and clear the reference
         else:
             c.delete(tiles[row][col])
             tiles[row][col] = None
-        if check_board(tiles, c):
-            c.quit()
+        if check_board(tiles, c, board):
+            game_over(c)
 
-# Create the window, a canvas and the mouse click event binding
-root = tk.Tk()
-c = tk.Canvas(root, width=RESOLUTION[0], height=RESOLUTION[1], borderwidth=5, background='white')
-c.pack()
-row_height = (RESOLUTION[1]-padding)/DIMENSIONS[1]
-for i, val in enumerate(row_desc):
-    string = '    '.join([str(i) for i in val])
-    c.create_text(padding/2, (padding + row_height*i + int(row_height/2)), text=string)
 
-row_width = (RESOLUTION[0]-padding)/DIMENSIONS[0]
-
-for i, val in enumerate(column_desc):
-    string = '\n'.join([str(i) for i in val])
-    c.create_text((padding + (row_width*i) + row_width/2), padding/2, text=string)
-c.create_rectangle(padding, padding, RESOLUTION[0], RESOLUTION[1])
-for i in range(DIMENSIONS[0]):
-    for n in range(DIMENSIONS[1]):
-        c.create_rectangle((i*row_width)+padding, (n*row_height)+padding, ((i+1)*row_width)+padding, ((n+1)*row_height)+padding)
-c.pack()
-c.bind("<Button-1>", callback)
-c.bind("<Button-3>", callback)
-
-root.mainloop()
+if __name__ == '__main__':
+    # Create the window, a canvas and the mouse click event binding
+    root = tk.Tk()
+    c = tk.Canvas(root, width=RESOLUTION[0], height=RESOLUTION[1], borderwidth=5, background='white')
+    board, tiles = init_game(c)
+    c.pack()
+    root.mainloop()
