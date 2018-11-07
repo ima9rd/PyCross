@@ -17,7 +17,6 @@ def generate_board():
             row_temp.append(random.randint(0,1))
         board.append([1 if x==1 else None for x in row_temp])
 
-
 def check_board(entries, canvas):
     global board
     for row_idx, row in enumerate(board):
@@ -61,10 +60,9 @@ def init_game(canvas):
     canvas.bind("<Button-1>", callback)
     canvas.bind("<Button-3>", callback)
     canvas.delete('all')
-    global board
+    global board, tiles
     generate_board()
     row_desc, column_desc = describe_board(board)
-    global tiles
     tiles = [[None for _ in range(DIMENSIONS[1])] for _ in range(DIMENSIONS[0])]
     row_height = (RESOLUTION[1]-PADDING)/DIMENSIONS[1]
     for i, val in enumerate(row_desc):
@@ -89,12 +87,11 @@ def game_over(canvas):
 
 def game_over_screen(event):
     init_game(c)
-    print(board,tiles)
 
 
 def callback(event):
     # Get rectangle diameters
-    print(board,tiles)
+    global board, tiles
     col_width = (c.winfo_width() - 14 - PADDING)/DIMENSIONS[0]
     row_height = (c.winfo_height() - 14 - PADDING)/DIMENSIONS[1]
     # Calculate column and row number
