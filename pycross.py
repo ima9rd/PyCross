@@ -3,7 +3,7 @@ import tkinter as tk
 
 
 # PyCross!
-DIMENSIONS = [2, 2]
+DIMENSIONS = [10, 10]
 RESOLUTION = [600, 600]
 PADDING = 100
 OUTLINE = 5
