@@ -3,7 +3,7 @@ import tkinter as tk
 
 
 # PyCross!
-DIMENSIONS = [10, 10]
+DIMENSIONS = [2, 2]
 RESOLUTION = [600, 600]
 PADDING = 100
 OUTLINE = 5
@@ -49,7 +49,7 @@ def describe_board(board, canvas=None):
                     if canvas.itemcget(cell, 'fill') == 'blue':
                         row_temp.append(1)
                     else:
-                        row_temp.append(0)
+                        row_temp.append(None)
         else:
             row_temp = row
         row_desc.append(generate_desc(row_temp))
