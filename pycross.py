@@ -50,6 +50,8 @@ def describe_board(board, canvas=None):
                         row_temp.append(1)
                     else:
                         row_temp.append(None)
+                else:
+                    row_temp.append(None)
         else:
             row_temp = row
         row_desc.append(generate_desc(row_temp))
