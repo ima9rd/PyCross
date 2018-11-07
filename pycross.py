@@ -3,22 +3,23 @@ import tkinter as tk
 
 
 # PyCross!
-DIMENSIONS = [4, 4]
+DIMENSIONS = [10, 10]
 RESOLUTION = [600, 600]
 PADDING = 100
 OUTLINE = 5
 
 def generate_board():
+    global board
     board = []
     for y in range(DIMENSIONS[1]):
         row_temp = []
         for x in range(DIMENSIONS[0]):
             row_temp.append(random.randint(0,1))
         board.append([1 if x==1 else None for x in row_temp])
-    return board
 
 
-def check_board(entries, canvas, board):
+def check_board(entries, canvas):
+    global board
     for row_idx, row in enumerate(board):
         for val_idx, val in enumerate(row):
             if entries[row_idx][val_idx]:
@@ -60,8 +61,10 @@ def init_game(canvas):
     canvas.bind("<Button-1>", callback)
     canvas.bind("<Button-3>", callback)
     canvas.delete('all')
-    board = generate_board()
+    global board
+    generate_board()
     row_desc, column_desc = describe_board(board)
+    global tiles
     tiles = [[None for _ in range(DIMENSIONS[1])] for _ in range(DIMENSIONS[0])]
     row_height = (RESOLUTION[1]-PADDING)/DIMENSIONS[1]
     for i, val in enumerate(row_desc):
@@ -75,7 +78,6 @@ def init_game(canvas):
     for i in range(DIMENSIONS[0]):
         for n in range(DIMENSIONS[1]):
             canvas.create_rectangle((i*row_width)+PADDING, (n*row_height)+PADDING, ((i+1)*row_width)+PADDING, ((n+1)*row_height)+PADDING)
-    return board, tiles
 
 def game_over(canvas):
     canvas.delete('all')
@@ -86,11 +88,13 @@ def game_over(canvas):
 # Create a grid of None to store the references to the tiles
 
 def game_over_screen(event):
-    board, tiles = init_game(c)
+    init_game(c)
+    print(board,tiles)
 
 
 def callback(event):
     # Get rectangle diameters
+    print(board,tiles)
     col_width = (c.winfo_width() - 14 - PADDING)/DIMENSIONS[0]
     row_height = (c.winfo_height() - 14 - PADDING)/DIMENSIONS[1]
     # Calculate column and row number
@@ -110,7 +114,7 @@ def callback(event):
         else:
             c.delete(tiles[row][col])
             tiles[row][col] = None
-        if check_board(tiles, c, board):
+        if check_board(tiles, c):
             game_over(c)
 
 
@@ -118,6 +122,7 @@ if __name__ == '__main__':
     # Create the window, a canvas and the mouse click event binding
     root = tk.Tk()
     c = tk.Canvas(root, width=RESOLUTION[0], height=RESOLUTION[1], borderwidth=5, background='white')
-    board, tiles = init_game(c)
+    global board, tiles
+    init_game(c)
     c.pack()
     root.mainloop()
