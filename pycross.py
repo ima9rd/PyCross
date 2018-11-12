@@ -123,7 +123,7 @@ def callback(event):
     # Calculate column and row number
     col = int((event.x-PADDING)//col_width)
     row = int((event.y-PADDING)//row_height)
-    if event.x < PADDING + OUTLINE or event.y < PADDING + OUTLINE or col > 9 or row > 9:
+    if event.x < PADDING + OUTLINE or event.y < PADDING + OUTLINE or col > DIMENSIONS[0]-1 or row > DIMENSIONS[1]-1:
         pass
     else:
         if event.num == 3:
