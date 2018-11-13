@@ -101,7 +101,7 @@ def init_game(canvas):
     canvas.create_rectangle(PADDING, PADDING, RESOLUTION[0], RESOLUTION[1])
     for i in range(DIMENSIONS[0]):
         for n in range(DIMENSIONS[1]):
-            canvas.create_rectangle((i*row_width)+PADDING, (n*row_height)+PADDING, ((i+1)*row_width)+PADDING, ((n+1)*row_height)+PADDING)
+            canvas.create_rectangle((i*row_width)+PADDING, (n*row_height)+PADDING, ((i+1)*row_width)+PADDING, ((n+1)*row_height)+PADDING, activewidth=1.5, fill='white')
 
 def game_over(canvas):
     canvas.delete('all')
@@ -132,7 +132,7 @@ def callback(event):
             color = 'blue' 
         # If the tile is not filled, create a rectangle
         if not tiles[row][col]:
-            tiles[row][col] = c.create_rectangle((col*col_width)+PADDING+OUTLINE, (row*row_height)+PADDING+OUTLINE, ((col+1)*col_width)+PADDING-OUTLINE, ((row+1)*row_height)+PADDING-OUTLINE, fill=color)
+            tiles[row][col] = c.create_rectangle((col*col_width)+PADDING+OUTLINE, (row*row_height)+PADDING+OUTLINE, ((col+1)*col_width)+PADDING-OUTLINE, ((row+1)*row_height)+PADDING-OUTLINE, fill=color, state='disabled')
         # If the tile is filled, delete the rectangle and clear the reference
         else:
             c.delete(tiles[row][col])
