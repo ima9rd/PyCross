@@ -3,7 +3,7 @@ import tkinter as tk
 
 
 # PyCross!
-DIMENSIONS = [10, 10]
+DIMENSIONS = [15, 15]
 RESOLUTION = [600, 600]
 PADDING = 100
 OUTLINE = 5
@@ -102,6 +102,14 @@ def init_game(canvas):
     for i in range(DIMENSIONS[0]):
         for n in range(DIMENSIONS[1]):
             canvas.create_rectangle((i*row_width)+PADDING, (n*row_height)+PADDING, ((i+1)*row_width)+PADDING, ((n+1)*row_height)+PADDING, activewidth=1.5, fill='white')
+    for i in range(int(DIMENSIONS[0]/5)+1):
+        canvas.create_line(PADDING, (i*5*row_height)+PADDING, RESOLUTION[0], (i*5*row_height)+PADDING, width=1.5)
+    if DIMENSIONS[0] // 5 > 0:
+        canvas.create_line(PADDING, RESOLUTION[1], RESOLUTION[0], RESOLUTION[1], width=1.5)
+    if DIMENSIONS[1] // 5 > 0:
+        canvas.create_line(RESOLUTION[0], PADDING, RESOLUTION[0], RESOLUTION[1], width=1.5)
+    for i in range(int(DIMENSIONS[1]/5)+1):
+        canvas.create_line(PADDING + i*5*row_width, PADDING, PADDING + i*5*row_width, RESOLUTION[1], width=1.5)
 
 def game_over(canvas):
     canvas.delete('all')
