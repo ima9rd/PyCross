@@ -4,7 +4,7 @@ import tkinter as tk
 
 # PyCross!
 DIMENSIONS = [15, 15]
-RESOLUTION = [600, 600]
+RESOLUTION = [800, 800]
 PADDING = 100
 OUTLINE = 5
 
@@ -79,6 +79,7 @@ def describe_board(board, canvas=None):
 def init_game(canvas):
     canvas.bind("<Button-1>", callback)
     canvas.bind("<Button-3>", callback)
+    canvas.bind_all("<F5>", game_over_screen)
     canvas.delete('all')
     global board, tiles
 
