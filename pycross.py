@@ -1,10 +1,12 @@
 import random
 import tkinter as tk
+import time
+import datetime
 
 
 # PyCross!
-DIMENSIONS = [15, 15]
-RESOLUTION = [800, 800]
+DIMENSIONS = [10, 10]
+RESOLUTION = [600, 600]
 PADDING = 100
 OUTLINE = 5
 
@@ -81,7 +83,7 @@ def init_game(canvas):
     canvas.bind("<Button-3>", callback)
     canvas.bind_all("<F5>", game_over_screen)
     canvas.delete('all')
-    global board, tiles
+    global board, tiles, start_time
 
     valid = False
     while not valid:
@@ -111,10 +113,12 @@ def init_game(canvas):
         canvas.create_line(RESOLUTION[0], PADDING, RESOLUTION[0], RESOLUTION[1], width=1.5)
     for i in range(int(DIMENSIONS[1]/5)+1):
         canvas.create_line(PADDING + i*5*row_width, PADDING, PADDING + i*5*row_width, RESOLUTION[1], width=1.5)
+    start_time = time.time()
 
 def game_over(canvas):
     canvas.delete('all')
-    canvas.create_text(RESOLUTION[0]/2, RESOLUTION[1]/2, text='You won! Click anywhere to begin a new game.')
+    global start_time
+    canvas.create_text(RESOLUTION[0]/2, RESOLUTION[1]/2, text='You won! Total Time: {} - Click anywhere to begin a new game.'.format(datetime.timedelta(seconds=(time.time() - start_time))))
     canvas.bind("<Button-1>", game_over_screen)
     canvas.bind("<Button-3>", game_over_screen)
 
@@ -154,7 +158,7 @@ if __name__ == '__main__':
     # Create the window, a canvas and the mouse click event binding
     root = tk.Tk()
     c = tk.Canvas(root, width=RESOLUTION[0], height=RESOLUTION[1], borderwidth=5, background='white')
-    global board, tiles
+    global board, tiles, start_time
     init_game(c)
     c.pack()
     root.mainloop()
